@@ -6,14 +6,13 @@ import { mergeProjects } from './logic'
 const optionsSchema = z.object({
     paths: z.array(z.string()).min(2),
     output: z.string().min(1),
+    debug: z.boolean().default(false),
+    force: z.boolean().default(false),
 })
 
 export type OptionsSchema = z.infer<typeof optionsSchema>
 
-type RawOptions = {
-    paths?: string[]
-    output?: string
-}
+type RawOptions = Partial<OptionsSchema>
 
 const isOptionsValid = (options: RawOptions): options is OptionsSchema => {
     return (optionsSchema.parse(options) as OptionsSchema).paths.length >= 2
@@ -24,9 +23,11 @@ const program = new Command()
 program
     .option('-p, --paths <paths...>', `projects' paths`)
     .option('-o, --output <output>', `output path`)
+    .option('-d, --debug', `debug mode`)
+    .option('-f, --force', `force directory overwrite`)
     .action((options: RawOptions) => {
-        console.log(options)
         try {
+            if (options.debug) console.log(options)
             if (isOptionsValid(options)) {
                 mergeProjects(options)
             }

@@ -1,6 +1,9 @@
-import { createDirectory } from './util'
+import { copyDirectory, generateIndexFile } from './util'
 import { OptionsSchema } from '.'
 
 export const mergeProjects = (options: OptionsSchema) => {
-    createDirectory(options.output)
+    options.paths.forEach((path) => {
+        copyDirectory(path, `${options.output}/${path}`, options.force)
+    })
+    generateIndexFile(options)
 }
