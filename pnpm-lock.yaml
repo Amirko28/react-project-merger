@@ -14,15 +14,6 @@ dependencies:
   glob:
     specifier: ^10.3.10
     version: 10.3.10
-  ignore:
-    specifier: ^5.2.4
-    version: 5.2.4
-  minimatch:
-    specifier: ^9.0.3
-    version: 9.0.3
-  ncp:
-    specifier: ^2.0.0
-    version: 2.0.0
   zod:
     specifier: ^3.22.2
     version: 3.22.2
@@ -31,9 +22,6 @@ devDependencies:
   '@types/fs-extra':
     specifier: ^11.0.2
     version: 11.0.2
-  '@types/ncp':
-    specifier: ^2.0.6
-    version: 2.0.6
   '@types/node':
     specifier: ^20.6.4
     version: 20.6.4
@@ -323,12 +311,6 @@ packages:
 
   /@types/jsonfile@6.1.2:
     resolution: {integrity: sha512-8t92P+oeW4d/CRQfJaSqEwXujrhH4OEeHRjGU3v1Q8mUS8GPF3yiX26sw4svv6faL2HfBtGTe2xWIoVgN3dy9w==}
-    dependencies:
-      '@types/node': 20.6.4
-    dev: true
-
-  /@types/ncp@2.0.6:
-    resolution: {integrity: sha512-A5CcYVkrcbRD+5ghRzn+LjEYUNT+YpjcPfnpYte6fBNfq3rXJRYA03cATV0XfVbSnOZa2Yp5sXYI1fIkjAF/UA==}
     dependencies:
       '@types/node': 20.6.4
     dev: true
@@ -655,6 +637,7 @@ packages:
   /ignore@5.2.4:
     resolution: {integrity: sha512-MAb38BcSbH0eHNBxn7ql2NH/kX33OkB3lZ1BNdh7ENeRChHTYsTvWrMubiIAMNS2llXEEgZ1MUOBtXChP3kaFQ==}
     engines: {node: '>= 4'}
+    dev: true
 
   /inflight@1.0.6:
     resolution: {integrity: sha512-k92I/b08q4wvFscXCLvqfsHCrjrF7yiXsQuIVvVE7N82W3+aqpzuUdBbfhWcy/FZR3/4IgflMgKLOsvPDrGCJA==}
@@ -800,11 +783,6 @@ packages:
       object-assign: 4.1.1
       thenify-all: 1.6.0
     dev: true
-
-  /ncp@2.0.0:
-    resolution: {integrity: sha512-zIdGUrPRFTUELUvr3Gmc7KZ2Sw/h1PiVM0Af/oHB6zgnV1ikqSfRk+TOufi79aHYCW3NiOXmr1BP5nWbzojLaA==}
-    hasBin: true
-    dev: false
 
   /normalize-path@3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}

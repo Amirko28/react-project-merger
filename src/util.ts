@@ -1,17 +1,5 @@
-import {
-    copyFileSync,
-    existsSync,
-    lstatSync,
-    mkdirSync,
-    readFile,
-    readFileSync,
-    readdirSync,
-    rmSync,
-    statSync,
-    writeFile,
-} from 'fs'
+import { existsSync, mkdirSync, readFileSync, writeFile } from 'fs'
 import path from 'path'
-import ignore from 'ignore'
 import { glob } from 'glob'
 import fsExtra from 'fs-extra'
 
@@ -28,39 +16,16 @@ export const copyDirectory = async (
     targetDir: string,
     ignoredFiles: string[] = []
 ) => {
-    const sourceFiles = glob.sync('*', {
+    const sourceFiles = glob.sync('**/*', {
         cwd: sourceDir,
-        dot: true,
-        ignore: ignoredFiles.map((exp) =>
-            exp.endsWith('/') ? `${exp}*` : exp
-        ),
-        mark: true,
-        nodir: true,
-    })
-
-    const sourceFilesHalf = glob.sync('**', {
-        cwd: sourceDir,
-        dot: true,
-        ignore: ignoredFiles.map((exp) =>
-            exp.endsWith('/') ? `${exp}*` : exp
-        ),
-        mark: true,
-        nodir: true,
-    })
-
-    const sourceFilesFull = glob.sync('**/*', {
-        cwd: sourceDir,
-        // dot: true,
         ignore: ignoredFiles.map((exp) =>
             exp.endsWith('/') ? `${exp}*` : exp
         ),
         nodir: true,
     })
-
-    console.log({ sourceFiles, sourceFilesHalf, sourceFilesFull })
 
     await Promise.allSettled(
-        sourceFilesFull.map((sourceFile) => {
+        sourceFiles.map((sourceFile) => {
             const sourcePath = path.join(sourceDir, sourceFile)
             const targetPath = path.join(targetDir, sourceFile)
 
