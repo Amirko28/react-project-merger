@@ -3,38 +3,70 @@ import {
     existsSync,
     lstatSync,
     mkdirSync,
+    readFile,
+    readFileSync,
     readdirSync,
     rmSync,
+    statSync,
     writeFile,
 } from 'fs'
 import path from 'path'
-import { OptionsSchema } from '.'
+import ignore from 'ignore'
+import { glob } from 'glob'
+import fsExtra from 'fs-extra'
 
-const createDirectory = (path: string, overwrite: boolean) => {
-    if (!existsSync(path)) {
-        mkdirSync(path, { recursive: true })
+const createDirectory = (path: string) => {
+    if (existsSync(path)) {
+        throw new Error('Directory already exists')
     } else {
-        if (overwrite) {
-            rmSync(path, { recursive: true })
-            mkdirSync(path, { recursive: true })
-        } else {
-            throw new Error('Directory already exists')
-        }
+        mkdirSync(path, { recursive: true })
     }
 }
 
-export const copyDirectory = (from: string, to: string, overwrite = false) => {
-    createDirectory(to, overwrite)
-    for (const file of readdirSync(from)) {
-        const fromPath = path.join(from, file)
-        const toPath = path.join(to, file)
-        const stat = lstatSync(fromPath)
-        if (stat.isDirectory()) {
-            copyDirectory(fromPath, toPath)
-        } else {
-            copyFileSync(fromPath, toPath)
-        }
-    }
+export const copyDirectory = async (
+    sourceDir: string,
+    targetDir: string,
+    ignoredFiles: string[] = []
+) => {
+    const sourceFiles = glob.sync('*', {
+        cwd: sourceDir,
+        dot: true,
+        ignore: ignoredFiles.map((exp) =>
+            exp.endsWith('/') ? `${exp}*` : exp
+        ),
+        mark: true,
+        nodir: true,
+    })
+
+    const sourceFilesHalf = glob.sync('**', {
+        cwd: sourceDir,
+        dot: true,
+        ignore: ignoredFiles.map((exp) =>
+            exp.endsWith('/') ? `${exp}*` : exp
+        ),
+        mark: true,
+        nodir: true,
+    })
+
+    const sourceFilesFull = glob.sync('**/*', {
+        cwd: sourceDir,
+        // dot: true,
+        ignore: ignoredFiles.map((exp) =>
+            exp.endsWith('/') ? `${exp}*` : exp
+        ),
+        nodir: true,
+    })
+
+    console.log({ sourceFiles, sourceFilesHalf, sourceFilesFull })
+
+    await Promise.allSettled(
+        sourceFilesFull.map((sourceFile) => {
+            const sourcePath = path.join(sourceDir, sourceFile)
+            const targetPath = path.join(targetDir, sourceFile)
+
+            return fsExtra.copy(sourcePath, targetPath)
+        })
+    )
 }
 
 const capitalizeSnakeCase = (str: string) =>
@@ -48,12 +80,27 @@ const indexTemplate = (paths: string[]) =>
         .map((path) => `import ${capitalizeSnakeCase(path)} from './${path}';`)
         .join('\n')
 
-export const generateIndexFile = (options: OptionsSchema) => {
+export const generateIndexFile = (
+    sourcePaths: string[],
+    targetPath: string,
+    isJavascript: boolean
+) => {
     writeFile(
-        `${options.output}/index.ts`,
-        indexTemplate(options.paths),
+        `${targetPath}/index.${isJavascript ? 'js' : 'ts'}`,
+        indexTemplate(sourcePaths),
         (err) => {
             if (err) throw err
         }
     )
+}
+
+export const getGitIgnoredFileNames = (path: string) => {
+    const gitIgnorePath = `${path}/.gitignore`
+    return existsSync(gitIgnorePath)
+        ? readFileSync(gitIgnorePath)
+              .toString()
+              .split('\n')
+              .map((str) => str.trim())
+              .filter((str) => str && !str.startsWith('#'))
+        : []
 }

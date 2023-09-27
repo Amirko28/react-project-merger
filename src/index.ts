@@ -2,12 +2,14 @@
 import { Command } from 'commander'
 import { z } from 'zod'
 import { mergeProjects } from './logic'
+import packageJson from '../package.json'
 
 const optionsSchema = z.object({
     paths: z.array(z.string()).min(2),
-    output: z.string().min(1),
-    debug: z.boolean().default(false),
-    force: z.boolean().default(false),
+    output: z.string(),
+    debug: z.boolean(),
+    force: z.boolean(),
+    javascript: z.boolean(),
 })
 
 export type OptionsSchema = z.infer<typeof optionsSchema>
@@ -21,20 +23,22 @@ const isOptionsValid = (options: RawOptions): options is OptionsSchema => {
 const program = new Command()
 
 program
-    .option('-p, --paths <paths...>', `projects' paths`)
-    .option('-o, --output <output>', `output path`)
-    .option('-d, --debug', `debug mode`)
-    .option('-f, --force', `force directory overwrite`)
-    .action((options: RawOptions) => {
+    .requiredOption('-p, --paths <paths...>', `projects' paths`)
+    .requiredOption('-o, --output <output>', `output path`)
+    .option('-d, --debug', `debug mode`, false)
+    .option('-f, --force', `force directory overwrite`, false)
+    .option('-js, --javascript', 'generate a javascript project', false)
+    .action(async (options: RawOptions) => {
         try {
             if (options.debug) console.log(options)
             if (isOptionsValid(options)) {
-                mergeProjects(options)
+                await mergeProjects(options)
             }
         } catch (error) {
             console.error(error)
         }
     })
     .description('Merge projects')
+    .version(packageJson.version)
 
 program.parse(process.argv)
