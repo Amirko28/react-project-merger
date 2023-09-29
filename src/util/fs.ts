@@ -1,22 +1,23 @@
-import { existsSync, mkdirSync, readFileSync, writeFile } from 'fs'
+import { existsSync, readFileSync, writeFile } from 'fs'
 import path from 'path'
 import { glob } from 'glob'
 import fsExtra from 'fs-extra'
+import { handleAllSettled } from './error'
 
-const createDirectory = (path: string) => {
-    if (existsSync(path)) {
-        throw new Error('Directory already exists')
-    } else {
-        mkdirSync(path, { recursive: true })
-    }
+interface CopyParams {
+    sourceDir: string
+    targetDir: string
+    ignoredFiles: string[]
+    recursive?: boolean
 }
 
-export const copyDirectory = async (
-    sourceDir: string,
-    targetDir: string,
-    ignoredFiles: string[] = []
-) => {
-    const sourceFiles = glob.sync('**/*', {
+export const copyDirectory = async ({
+    sourceDir,
+    targetDir,
+    ignoredFiles = [],
+    recursive = true,
+}: CopyParams) => {
+    const sourceFiles = glob.sync(recursive ? '**/*' : '*', {
         cwd: sourceDir,
         ignore: ignoredFiles.map((exp) =>
             exp.endsWith('/') ? `${exp}*` : exp
@@ -24,7 +25,7 @@ export const copyDirectory = async (
         nodir: true,
     })
 
-    await Promise.allSettled(
+    await handleAllSettled(
         sourceFiles.map((sourceFile) => {
             const sourcePath = path.join(sourceDir, sourceFile)
             const targetPath = path.join(targetDir, sourceFile)
@@ -50,6 +51,7 @@ export const generateIndexFile = (
     targetPath: string,
     isJavascript: boolean
 ) => {
+    console.log('Generating index file...')
     writeFile(
         `${targetPath}/index.${isJavascript ? 'js' : 'ts'}`,
         indexTemplate(sourcePaths),

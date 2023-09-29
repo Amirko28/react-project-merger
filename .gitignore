@@ -1,3 +1,8 @@
+# Debugging directories
+src1/
+src2/
+merged/
+
 # Logs
 logs
 *.log

@@ -1,33 +1,42 @@
+import { rmSync } from 'fs'
 import {
     copyDirectory,
     generateIndexFile,
     getGitIgnoredFileNames,
-} from './util'
+} from './util/fs'
 import { OptionsSchema } from '.'
-import { rmSync } from 'fs'
+import { handleAllSettled } from './util/error'
+
+const copySourceDirectories = async (options: OptionsSchema) => {
+    console.log('Copying source directories...')
+    await handleAllSettled(
+        options.paths.map((path) => {
+            const ignoredFiles = getGitIgnoredFileNames(path)
+            return copyDirectory({
+                sourceDir: path,
+                targetDir: `${options.output}/${path}`,
+                ignoredFiles,
+            })
+        })
+    )
+}
 
 export const mergeProjects = async (options: OptionsSchema) => {
     if (options.force) {
         rmSync(options.output, { recursive: true, force: true })
     }
 
-    const results = await Promise.allSettled(
-        options.paths.map((path) => {
-            const filesToIgnore = getGitIgnoredFileNames(path)
-            // if (options.debug) console.log({ filesToIgnore })
-            return copyDirectory(
-                path,
-                `${options.output}/${path}`,
-                filesToIgnore
-            )
-        })
-    )
-
-    results.forEach((res) => {
-        if (res.status === 'rejected') {
-            throw new Error(res.reason)
-        }
-    })
-
+    await copySourceDirectories(options)
+    await copyRootFiles(options.paths[0] as string, options.output)
     generateIndexFile(options.paths, options.output, options.javascript)
+}
+const copyRootFiles = async (sourcePath: string, outputPath: string) => {
+    console.log(`Copying root files from ${sourcePath}...`)
+    const ignoredFiles = getGitIgnoredFileNames(sourcePath)
+    await copyDirectory({
+        sourceDir: sourcePath,
+        targetDir: outputPath,
+        ignoredFiles,
+        recursive: false,
+    })
 }

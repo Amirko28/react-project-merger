@@ -17,7 +17,7 @@ export type OptionsSchema = z.infer<typeof optionsSchema>
 type RawOptions = Partial<OptionsSchema>
 
 const isOptionsValid = (options: RawOptions): options is OptionsSchema => {
-    return (optionsSchema.parse(options) as OptionsSchema).paths.length >= 2
+    return optionsSchema.parse(options).paths.length >= 2
 }
 
 const program = new Command()
