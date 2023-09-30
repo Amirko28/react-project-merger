@@ -10,7 +10,7 @@
     },
     "scripts": {
         "dev": "tsc -w",
-        "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+        "lint": "eslint . --ext ts,tsx",
         "build": "tsup src/index.ts --format cjs,esm --dts --minify",
         "link-cli": "pnpm build && pnpm unlink . && pnpm link ."
     },

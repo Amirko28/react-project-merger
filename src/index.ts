@@ -10,6 +10,7 @@ const optionsSchema = z.object({
     debug: z.boolean(),
     force: z.boolean(),
     javascript: z.boolean(),
+    mainFileName: z.string(),
 })
 
 export type OptionsSchema = z.infer<typeof optionsSchema>
@@ -28,6 +29,7 @@ program
     .option('-d, --debug', `debug mode`, false)
     .option('-f, --force', `force directory overwrite`, false)
     .option('-js, --javascript', 'generate a javascript project', false)
+    .option('--main-file-name <mainFileName>', `index file name`, 'src/index')
     .action(async (options: RawOptions) => {
         try {
             if (options.debug) console.log(options)

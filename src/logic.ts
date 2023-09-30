@@ -2,6 +2,7 @@ import { rmSync } from 'fs'
 import {
     copyDirectory,
     generateIndexFile,
+    generateRouterComponent,
     getGitIgnoredFileNames,
 } from './util/fs'
 import { OptionsSchema } from '.'
@@ -27,16 +28,30 @@ export const mergeProjects = async (options: OptionsSchema) => {
     }
 
     await copySourceDirectories(options)
-    await copyRootFiles(options.paths[0] as string, options.output)
-    generateIndexFile(options.paths, options.output, options.javascript)
+    await moveRootFiles(options.paths[0] as string, options.output)
+    generateRouterComponent({
+        sourcePaths: options.paths,
+        targetPath: options.output,
+        options: {
+            isJavascript: options.javascript,
+            mainFileName: options.mainFileName,
+        },
+    })
+    generateIndexFile({
+        targetPath: options.output,
+        isJavascript: options.javascript,
+    })
 }
-const copyRootFiles = async (sourcePath: string, outputPath: string) => {
-    console.log(`Copying root files from ${sourcePath}...`)
+const moveRootFiles = async (sourcePath: string, outputPath: string) => {
+    console.log(`Moving root files from ${sourcePath}...`)
     const ignoredFiles = getGitIgnoredFileNames(sourcePath)
     await copyDirectory({
         sourceDir: sourcePath,
         targetDir: outputPath,
         ignoredFiles,
-        recursive: false,
+        options: {
+            recursive: false,
+            deleteOnCopy: true,
+        },
     })
 }
