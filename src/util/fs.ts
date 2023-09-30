@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, rmSync, writeFileSync } from 'fs'
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'fs'
 import path from 'path'
 import { glob } from 'glob'
 import fsExtra from 'fs-extra'
@@ -6,7 +6,7 @@ import { handleAllSettled } from './error'
 
 interface CopyOptions {
     recursive: boolean
-    deleteOnCopy: boolean
+    move: boolean
 }
 
 interface CopyParams {
@@ -20,7 +20,7 @@ export const copyDirectory = async ({
     sourceDir,
     targetDir,
     ignoredFiles = [],
-    options = { recursive: true, deleteOnCopy: false },
+    options = { recursive: true, move: false },
 }: CopyParams): Promise<string[]> => {
     const sourceFiles = glob.sync(options.recursive ? '**/*' : '*', {
         cwd: sourceDir,
@@ -35,7 +35,7 @@ export const copyDirectory = async ({
             const sourcePath = path.join(sourceDir, sourceFile)
             const targetPath = path.join(targetDir, sourceFile)
 
-            if (options.deleteOnCopy) {
+            if (options.move) {
                 const pathToDelete = path.join(targetDir, sourcePath)
                 rmSync(pathToDelete, { recursive: true, force: true })
             }
@@ -60,7 +60,7 @@ const routerTemplate = (paths: string[], mainFileName: string) =>
                 (path) =>
                     `import ${capitalizeSnakeCase(
                         path
-                    )} from './${path}/${mainFileName}';`
+                    )} from '../${path}/${mainFileName}';`
             )
             .join('\n')
     ).concat(`\n\n
@@ -75,6 +75,10 @@ const Main = () => {
 };
         
 export default Main;`)
+
+export const createSrcDirectory = (outputPath: string) => {
+    mkdirSync(path.join(outputPath, 'src'), { recursive: true })
+}
 
 interface GenerateRouterParams {
     sourcePaths: string[]
@@ -92,7 +96,7 @@ export const generateRouterComponent = ({
 }: GenerateRouterParams) => {
     console.log('Generating router component...')
     writeFileSync(
-        `${targetPath}/main.${isJavascript ? 'jsx' : 'tsx'}`,
+        path.join(targetPath, 'src', `main.${isJavascript ? 'jsx' : 'tsx'}`),
         routerTemplate(sourcePaths, mainFileName)
     )
 }
@@ -109,17 +113,17 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 )`
 
 const htmlTemplate = (indexPath: string) => `
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Merged App</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="${indexPath}"></script>
-  </body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Merged App</title>
+    </head>
+    <body>
+        <div id="root"></div>
+        <script type="module" src="${indexPath}"></script>
+    </body>
 </html>`
 
 interface GenerateIndexParams {
@@ -134,11 +138,13 @@ export const generateIndexFile = ({
     const indexFileName = `index.${isJavascript ? 'jsx' : 'tsx'}`
 
     console.log(`Generating ${indexFileName} file...`)
-    const indexPath = `${targetPath}/${indexFileName}`
+    const indexRelatievPath = path.join('src', indexFileName)
+    const indexPath = path.join(targetPath, indexRelatievPath)
     writeFileSync(indexPath, indexTemplate())
 
     console.log('Generating index.html...')
-    writeFileSync('index.html', htmlTemplate(indexPath))
+    const indexHtmlPath = path.join(targetPath, 'index.html')
+    writeFileSync(indexHtmlPath, htmlTemplate(indexRelatievPath))
 }
 
 export const getGitIgnoredFileNames = (path: string) => {

@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 import { Command } from 'commander'
 import { z } from 'zod'
-import { mergeProjects } from './logic'
+import { mergeProjects, printFinishedMessage } from './logic'
 import packageJson from '../package.json'
+import { getUserPkgManager } from './util/getUserPkgManager'
 
 const optionsSchema = z.object({
     paths: z.array(z.string()).min(2),
@@ -35,6 +36,7 @@ program
             if (options.debug) console.log(options)
             if (isOptionsValid(options)) {
                 await mergeProjects(options)
+                printFinishedMessage(options.output)
             }
         } catch (error) {
             console.error(error)

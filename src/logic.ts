@@ -1,12 +1,14 @@
 import { rmSync } from 'fs'
 import {
     copyDirectory,
+    createSrcDirectory,
     generateIndexFile,
     generateRouterComponent,
     getGitIgnoredFileNames,
 } from './util/fs'
 import { OptionsSchema } from '.'
 import { handleAllSettled } from './util/error'
+import { getUserPkgManager } from './util/getUserPkgManager'
 
 const copySourceDirectories = async (options: OptionsSchema) => {
     console.log('Copying source directories...')
@@ -29,6 +31,7 @@ export const mergeProjects = async (options: OptionsSchema) => {
 
     await copySourceDirectories(options)
     await moveRootFiles(options.paths[0] as string, options.output)
+    await createSrcDirectory(options.output)
     generateRouterComponent({
         sourcePaths: options.paths,
         targetPath: options.output,
@@ -51,7 +54,17 @@ const moveRootFiles = async (sourcePath: string, outputPath: string) => {
         ignoredFiles,
         options: {
             recursive: false,
-            deleteOnCopy: true,
+            move: true,
         },
     })
+}
+
+export const printFinishedMessage = (outputPath: string) => {
+    const packageManager = getUserPkgManager()
+    const installCommand = `${packageManager} install`
+    console.log(`
+Finished!
+To continue, run:
+cd ${outputPath}
+${installCommand}`)
 }
