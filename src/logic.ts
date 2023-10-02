@@ -12,13 +12,8 @@ import { OptionsSchema } from '.'
 import { handleAllSettled } from './util/error'
 import { getUserPkgManager } from './util/getUserPkgManager'
 
-export const getInputFileContent = <TSchema>(
-    path: string,
-    schema: z.Schema<TSchema>
-): TSchema => {
-    const fileContent = getJsonContentFromFile(path)
-    return schema.parse(fileContent)
-}
+export const getInputFileContent = (path: string) =>
+    getJsonContentFromFile(path)
 
 const copySourceDirectories = async (options: OptionsSchema) => {
     console.log('Copying source directories...')
@@ -47,7 +42,7 @@ export const mergeProjects = async (options: OptionsSchema) => {
         targetPath: options.output,
         options: {
             isJavascript: options.javascript,
-            mainFileName: options.mainFileName,
+            appFileName: options.appFilePath,
         },
     })
     generateIndexFile({

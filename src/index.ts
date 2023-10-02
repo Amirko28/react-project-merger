@@ -17,10 +17,10 @@ export type RequiredOptionsSchema = z.infer<typeof requiredOptionsSchema>
 
 const optionalOptionsSchema = z.object({
     input: z.string().optional(),
-    debug: z.boolean(),
-    force: z.boolean(),
-    javascript: z.boolean(),
-    mainFileName: z.string(),
+    debug: z.boolean().default(false),
+    force: z.boolean().default(false),
+    javascript: z.boolean().default(false),
+    appFilePath: z.string().default('src/App'),
 })
 
 const optionsSchema = requiredOptionsSchema.merge(optionalOptionsSchema)
@@ -31,11 +31,9 @@ type RawOptions = Partial<OptionsSchema>
 
 const vaildateOptions = (rawOptions: RawOptions): OptionsSchema => {
     const optionsFromInputFile = rawOptions.input
-        ? getInputFileContent(rawOptions.input, optionsSchema)
+        ? getInputFileContent(rawOptions.input)
         : {}
-    const optionsFromCLI = optionsSchema.parse(rawOptions)
-    const options = { ...optionsFromInputFile, ...optionsFromCLI }
-    return options
+    return optionsSchema.parse({ ...optionsFromInputFile, ...rawOptions })
 }
 
 const program = new Command()
@@ -43,10 +41,16 @@ const program = new Command()
 program
     .option('-p, --paths <paths...>', `projects' paths`)
     .option('-o, --output <output>', `output path`)
-    .option('-d, --debug', 'debug mode', false)
-    .option('-f, --force', 'force directory overwrite', false)
-    .option('-js, --javascript', 'generate a javascript project', false)
-    .option('--main-file-name <mainFileName>', 'index file name', 'src/App')
+    .option('-d, --debug', 'debug mode (default: false)')
+    .option('-f, --force', 'force directory overwrite (default: false)')
+    .option(
+        '-js, --javascript',
+        'generate a javascript project (default: false)'
+    )
+    .option(
+        '--app-file <appFilePath>',
+        `app component path (default: 'src/App')`
+    )
     .option('-i, --input <input>', 'input file name')
     .action(async (rawOptions: RawOptions) => {
         try {

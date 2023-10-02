@@ -57,18 +57,18 @@ const capitalizeSnakeCase = (str: string) =>
         .map((str) => str[0]!.toUpperCase() + str.slice(1))
         .join('')
 
-const routerTemplate = (paths: string[], mainFileName: string) =>
+const routerTemplate = (paths: string[], appFilePath: string) =>
     `import React from 'react';\n`.concat(
         paths
             .map(
                 (path) =>
                     `import ${capitalizeSnakeCase(
                         path
-                    )} from '../${path}/${mainFileName}';`
+                    )} from '../${path}/${appFilePath}';`
             )
             .join('\n')
     ).concat(`\n\n
-const Main = () => {
+const App = () => {
     return (
         <div>
             ${paths
@@ -78,7 +78,7 @@ const Main = () => {
     )
 };
         
-export default Main;`)
+export default App;`)
 
 export const createSrcDirectory = (outputPath: string) => {
     mkdirSync(path.join(outputPath, 'src'), { recursive: true })
@@ -89,26 +89,26 @@ interface GenerateRouterParams {
     targetPath: string
     options: {
         isJavascript: boolean
-        mainFileName: string
+        appFilePath: string
     }
 }
 
 export const generateRouterComponent = ({
     sourcePaths,
     targetPath,
-    options: { isJavascript, mainFileName },
+    options: { isJavascript, appFilePath },
 }: GenerateRouterParams) => {
     console.log('Generating router component...')
     writeFileSync(
-        path.join(targetPath, 'src', `main.${isJavascript ? 'jsx' : 'tsx'}`),
-        routerTemplate(sourcePaths, mainFileName)
+        path.join(targetPath, 'src', `App.${isJavascript ? 'jsx' : 'tsx'}`),
+        routerTemplate(sourcePaths, appFilePath)
     )
 }
 
 const indexTemplate = () =>
     `import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './main';
+import App from './App';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
@@ -163,4 +163,4 @@ export const getGitIgnoredFileNames = (path: string) => {
 }
 
 export const getJsonContentFromFile = (path: string) =>
-    readJSONSync(path, 'utf-8') as string
+    readJSONSync(path, 'utf-8') as Record<string, unknown>
