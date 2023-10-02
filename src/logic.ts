@@ -1,7 +1,7 @@
-import { z } from 'zod'
 import {
     copyDirectory,
     createSrcDirectory,
+    deleteSourceDirectoriesRootFiles,
     generateIndexFile,
     generateRouterComponent,
     getGitIgnoredFileNames,
@@ -35,7 +35,8 @@ export const mergeProjects = async (options: OptionsSchema) => {
     }
 
     await copySourceDirectories(options)
-    await moveRootFiles(options.paths[0] as string, options.output)
+    await copyRootFiles(options.paths[0] as string, options.output)
+    deleteSourceDirectoriesRootFiles(options.paths, options.output)
     createSrcDirectory(options.output)
     generateRouterComponent({
         sourcePaths: options.paths,
@@ -50,8 +51,8 @@ export const mergeProjects = async (options: OptionsSchema) => {
         isJavascript: options.javascript,
     })
 }
-const moveRootFiles = async (sourcePath: string, outputPath: string) => {
-    console.log(`Moving root files from ${sourcePath}...`)
+const copyRootFiles = async (sourcePath: string, outputPath: string) => {
+    console.log(`Copying root files from ${sourcePath}...`)
     const ignoredFiles = getGitIgnoredFileNames(sourcePath)
     await copyDirectory({
         sourceDir: sourcePath,

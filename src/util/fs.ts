@@ -52,6 +52,26 @@ export const copyDirectory = async ({
     return sourceFiles
 }
 
+export const deleteSourceDirectoriesRootFiles = (
+    paths: string[],
+    targetDir: string
+) => {
+    console.log('Deleting source directories root files...')
+    paths.forEach((sourceDir) => {
+        const sourceFiles = glob.sync('*', {
+            cwd: sourceDir,
+            nodir: true,
+        })
+
+        sourceFiles.map((sourceFile) => {
+            const sourcePath = path.join(sourceDir, sourceFile)
+            const pathToDelete = path.join(targetDir, sourcePath)
+
+            removeDirectory(pathToDelete)
+        })
+    })
+}
+
 const capitalizeSnakeCase = (str: string) =>
     str
         .split('_')
@@ -59,29 +79,38 @@ const capitalizeSnakeCase = (str: string) =>
         .join('')
 
 const routerTemplate = (paths: string[], appFilePath: string) =>
-    `import React from 'react';\n`.concat(
+    `import React from 'react'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'\n`.concat(
         paths
             .map(
                 (path) =>
                     `import ${capitalizeSnakeCase(
                         path
-                    )} from '../${path}/${appFilePath}';`
+                    )} from '../${path}/${appFilePath}'`
             )
             .join('\n')
-    ).concat(`\n\n
+    ).concat(`\n
+const router = createBrowserRouter([${paths
+        .map(
+            (path) =>
+                `
+    {
+        path: '/${path}',
+        element: <${capitalizeSnakeCase(path)} />,
+    },`
+        )
+        .join('\n')}
+])
+
 const App = () => {
-    return (
-        <div>
-            ${paths
-                .map((path) => `<${capitalizeSnakeCase(path)} />`)
-                .join('\n\t\t\t')}
-        </div>
-    )
+    return <RouterProvider router={router} />
 };
         
-export default App;`)
+export default App
+`)
 
 export const createSrcDirectory = (outputPath: string) => {
+    console.log('Creating new src directory...')
     mkdirSync(path.join(outputPath, 'src'), { recursive: true })
 }
 
@@ -114,12 +143,14 @@ export const generateRouterComponent = ({
     )
 }
 
-const indexTemplate = () =>
+const indexTemplate = (isJavascript: boolean) =>
     `import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+ReactDOM.createRoot(document.getElementById('root')${
+        isJavascript ? '' : '!'
+    }).render(
     <React.StrictMode>
         <App />
     </React.StrictMode>,
@@ -153,7 +184,7 @@ export const generateIndexFile = ({
     console.log(`Generating ${indexFileName} file...`)
     const indexRelatievPath = path.join('src', indexFileName)
     const indexPath = path.join(targetPath, indexRelatievPath)
-    writeFileSync(indexPath, indexTemplate())
+    writeFileSync(indexPath, indexTemplate(isJavascript))
 
     console.log('Generating index.html...')
     const indexHtmlPath = path.join(targetPath, 'index.html')
