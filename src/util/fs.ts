@@ -1,8 +1,12 @@
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'fs'
 import path from 'path'
 import { glob } from 'glob'
-import fsExtra from 'fs-extra'
+import fsExtra, { readJSONSync } from 'fs-extra'
 import { handleAllSettled } from './error'
+
+export const removeDirectory = (path: string) => {
+    rmSync(path, { recursive: true, force: true })
+}
 
 interface CopyOptions {
     recursive: boolean
@@ -37,7 +41,7 @@ export const copyDirectory = async ({
 
             if (options.move) {
                 const pathToDelete = path.join(targetDir, sourcePath)
-                rmSync(pathToDelete, { recursive: true, force: true })
+                removeDirectory(pathToDelete)
             }
 
             return fsExtra.copy(sourcePath, targetPath)
@@ -157,3 +161,6 @@ export const getGitIgnoredFileNames = (path: string) => {
               .filter((str) => str && !str.startsWith('#'))
         : []
 }
+
+export const getJsonContentFromFile = (path: string) =>
+    readJSONSync(path, 'utf-8') as string

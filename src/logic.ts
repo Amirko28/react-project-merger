@@ -1,14 +1,24 @@
-import { rmSync } from 'fs'
+import { z } from 'zod'
 import {
     copyDirectory,
     createSrcDirectory,
     generateIndexFile,
     generateRouterComponent,
     getGitIgnoredFileNames,
+    getJsonContentFromFile,
+    removeDirectory,
 } from './util/fs'
 import { OptionsSchema } from '.'
 import { handleAllSettled } from './util/error'
 import { getUserPkgManager } from './util/getUserPkgManager'
+
+export const getInputFileContent = <TSchema>(
+    path: string,
+    schema: z.Schema<TSchema>
+): TSchema => {
+    const fileContent = getJsonContentFromFile(path)
+    return schema.parse(fileContent)
+}
 
 const copySourceDirectories = async (options: OptionsSchema) => {
     console.log('Copying source directories...')
@@ -26,12 +36,12 @@ const copySourceDirectories = async (options: OptionsSchema) => {
 
 export const mergeProjects = async (options: OptionsSchema) => {
     if (options.force) {
-        rmSync(options.output, { recursive: true, force: true })
+        removeDirectory(options.output)
     }
 
     await copySourceDirectories(options)
     await moveRootFiles(options.paths[0] as string, options.output)
-    await createSrcDirectory(options.output)
+    createSrcDirectory(options.output)
     generateRouterComponent({
         sourcePaths: options.paths,
         targetPath: options.output,
@@ -64,6 +74,7 @@ export const printFinishedMessage = (outputPath: string) => {
     const installCommand = `${packageManager} install`
     console.log(`
 Finished!
+
 To continue, run:
 cd ${outputPath}
 ${installCommand}`)

@@ -1,43 +1,61 @@
 #!/usr/bin/env node
 import { Command } from 'commander'
 import { z } from 'zod'
-import { mergeProjects, printFinishedMessage } from './logic'
+import {
+    getInputFileContent,
+    mergeProjects,
+    printFinishedMessage,
+} from './logic'
 import packageJson from '../package.json'
-import { getUserPkgManager } from './util/getUserPkgManager'
 
-const optionsSchema = z.object({
+const requiredOptionsSchema = z.object({
     paths: z.array(z.string()).min(2),
     output: z.string(),
+})
+
+export type RequiredOptionsSchema = z.infer<typeof requiredOptionsSchema>
+
+const optionalOptionsSchema = z.object({
+    input: z.string().optional(),
     debug: z.boolean(),
     force: z.boolean(),
     javascript: z.boolean(),
     mainFileName: z.string(),
 })
 
+const optionsSchema = requiredOptionsSchema.merge(optionalOptionsSchema)
+
 export type OptionsSchema = z.infer<typeof optionsSchema>
 
 type RawOptions = Partial<OptionsSchema>
 
-const isOptionsValid = (options: RawOptions): options is OptionsSchema => {
-    return optionsSchema.parse(options).paths.length >= 2
+const vaildateOptions = (rawOptions: RawOptions): OptionsSchema => {
+    const optionsFromInputFile = rawOptions.input
+        ? getInputFileContent(rawOptions.input, optionsSchema)
+        : {}
+    const optionsFromCLI = optionsSchema.parse(rawOptions)
+    const options = { ...optionsFromInputFile, ...optionsFromCLI }
+    return options
 }
 
 const program = new Command()
 
 program
-    .requiredOption('-p, --paths <paths...>', `projects' paths`)
-    .requiredOption('-o, --output <output>', `output path`)
-    .option('-d, --debug', `debug mode`, false)
-    .option('-f, --force', `force directory overwrite`, false)
+    .option('-p, --paths <paths...>', `projects' paths`)
+    .option('-o, --output <output>', `output path`)
+    .option('-d, --debug', 'debug mode', false)
+    .option('-f, --force', 'force directory overwrite', false)
     .option('-js, --javascript', 'generate a javascript project', false)
-    .option('--main-file-name <mainFileName>', `index file name`, 'src/index')
-    .action(async (options: RawOptions) => {
+    .option('--main-file-name <mainFileName>', 'index file name', 'src/App')
+    .option('-i, --input <input>', 'input file name')
+    .action(async (rawOptions: RawOptions) => {
         try {
-            if (options.debug) console.log(options)
-            if (isOptionsValid(options)) {
-                await mergeProjects(options)
-                printFinishedMessage(options.output)
+            const options = vaildateOptions(rawOptions)
+            if (options.debug) {
+                console.log(options)
             }
+            await mergeProjects(options)
+            printFinishedMessage(options.output)
         } catch (error) {
             console.error(error)
         }

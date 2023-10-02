@@ -2,6 +2,7 @@
 src1/
 src2/
 merged/
+input.json
 
 # Logs
 logs
