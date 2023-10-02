@@ -42,7 +42,7 @@ export const mergeProjects = async (options: OptionsSchema) => {
         targetPath: options.output,
         options: {
             isJavascript: options.javascript,
-            appFileName: options.appFilePath,
+            appFilePath: options.appFilePath,
         },
     })
     generateIndexFile({

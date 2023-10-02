@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'fs'
 import path from 'path'
+import { execSync } from 'child_process'
 import { glob } from 'glob'
 import fsExtra, { readJSONSync } from 'fs-extra'
 import { handleAllSettled } from './error'
@@ -99,6 +100,13 @@ export const generateRouterComponent = ({
     options: { isJavascript, appFilePath },
 }: GenerateRouterParams) => {
     console.log('Generating router component...')
+    // Using 'add-dependencies' to add react-router-dom to package.json without installing it
+    execSync(
+        `add-dependencies ${path.join(
+            targetPath,
+            'package.json'
+        )} react-router-dom`
+    )
     writeFileSync(
         path.join(targetPath, 'src', `App.${isJavascript ? 'jsx' : 'tsx'}`),
         routerTemplate(sourcePaths, appFilePath)
