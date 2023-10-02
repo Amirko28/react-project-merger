@@ -41,7 +41,7 @@ const program = new Command()
 program
     .option('-p, --paths <paths...>', `projects' paths`)
     .option('-o, --output <output>', `output path`)
-    .option('-d, --debug', 'debug mode (default: false)')
+    .option('-i, --input <input>', 'input file name')
     .option('-f, --force', 'force directory overwrite (default: false)')
     .option(
         '-js, --javascript',
@@ -51,7 +51,7 @@ program
         '--app-file <appFilePath>',
         `app component path (default: 'src/App')`
     )
-    .option('-i, --input <input>', 'input file name')
+    .option('-d, --debug', 'debug mode (default: false)')
     .action(async (rawOptions: RawOptions) => {
         try {
             const options = vaildateOptions(rawOptions)
@@ -65,6 +65,7 @@ program
         }
     })
     .description('Merge projects')
+    .usage('merge <paths...> <output> [options]')
     .version(packageJson.version)
 
 program.parse(process.argv)
