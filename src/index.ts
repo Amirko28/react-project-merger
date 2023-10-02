@@ -39,6 +39,9 @@ const vaildateOptions = (rawOptions: RawOptions): OptionsSchema => {
 const program = new Command()
 
 program
+    .description('Merge projects')
+    .usage('merge <paths...> <output> [options]')
+    .version(packageJson.version)
     .option('-p, --paths <paths...>', `projects' paths`)
     .option('-o, --output <output>', `output path`)
     .option('-i, --input <input>', 'input file name')
@@ -64,8 +67,5 @@ program
             console.error(error)
         }
     })
-    .description('Merge projects')
-    .usage('merge <paths...> <output> [options]')
-    .version(packageJson.version)
 
 program.parse(process.argv)
