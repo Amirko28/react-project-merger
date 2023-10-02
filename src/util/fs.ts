@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'fs'
 import path from 'path'
 import { execSync } from 'child_process'
 import { glob } from 'glob'
-import fsExtra, { readJSONSync } from 'fs-extra'
+import { copy, readJSONSync } from 'fs-extra'
 import { handleAllSettled } from './error'
 
 export const removeDirectory = (path: string) => {
@@ -45,7 +45,7 @@ export const copyDirectory = async ({
                 removeDirectory(pathToDelete)
             }
 
-            return fsExtra.copy(sourcePath, targetPath)
+            return copy(sourcePath, targetPath)
         })
     )
 
@@ -100,6 +100,7 @@ export const generateRouterComponent = ({
     options: { isJavascript, appFilePath },
 }: GenerateRouterParams) => {
     console.log('Generating router component...')
+
     // Using 'add-dependencies' to add react-router-dom to package.json without installing it
     execSync(
         `add-dependencies ${path.join(
