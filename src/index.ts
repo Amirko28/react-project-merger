@@ -1,33 +1,12 @@
 #!/usr/bin/env node
 import { Command } from 'commander'
-import { z } from 'zod'
 import {
     getInputFileContent,
     mergeProjects,
     printFinishedMessage,
 } from './logic'
 import packageJson from '../package.json'
-
-const requiredOptionsSchema = z.object({
-    paths: z.array(z.string()).min(2),
-    output: z.string(),
-})
-
-export type RequiredOptionsSchema = z.infer<typeof requiredOptionsSchema>
-
-const optionalOptionsSchema = z.object({
-    input: z.string().optional(),
-    debug: z.boolean().default(false),
-    force: z.boolean().default(false),
-    javascript: z.boolean().default(false),
-    appFilePath: z.string().default('src/App'),
-})
-
-const optionsSchema = requiredOptionsSchema.merge(optionalOptionsSchema)
-
-export type OptionsSchema = z.infer<typeof optionsSchema>
-
-type RawOptions = Partial<OptionsSchema>
+import { OptionsSchema, RawOptions, optionsSchema } from './options'
 
 const vaildateOptions = (rawOptions: RawOptions): OptionsSchema => {
     const optionsFromInputFile = rawOptions.input
