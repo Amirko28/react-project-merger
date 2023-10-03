@@ -1,20 +1,18 @@
-import { OptionsSchema } from '../options'
+import { Options } from '../options'
 import { handleAllSettled } from '../util/error'
 import {
     copyDirectory,
-    createSrcDirectory,
-    deleteSourceDirectoriesRootFiles,
-    generateIndexFile,
-    generateRouterComponent,
     getGitIgnoredFileNames,
+    isDirectoryExists,
     removeDirectory,
 } from '../util/fs'
 
-const copySourceDirectories = async (options: OptionsSchema) => {
+const copySourceDirectories = async (options: Options) => {
     console.log('Copying source directories...')
     await handleAllSettled(
-        options.paths.map((path) => {
+        options.paths.map((path: string) => {
             const ignoredFiles = getGitIgnoredFileNames(path)
+
             return copyDirectory({
                 sourceDir: path,
                 targetDir: `${options.output}/${path}`,
@@ -38,25 +36,17 @@ const copyRootFiles = async (sourcePath: string, outputPath: string) => {
     })
 }
 
-export const mergeProjects = async (options: OptionsSchema) => {
-    if (options.force) {
-        removeDirectory(options.output)
+export const copySourceProjects = async (options: Options) => {
+    if (isDirectoryExists(options.output)) {
+        if (options.force) {
+            removeDirectory(options.output)
+        } else {
+            throw new Error(
+                'Output directory already exists. Use -f or --force to overwrite.'
+            )
+        }
     }
 
     await copySourceDirectories(options)
     await copyRootFiles(options.paths[0] as string, options.output)
-    deleteSourceDirectoriesRootFiles(options.paths, options.output)
-    createSrcDirectory(options.output)
-    generateRouterComponent({
-        sourcePaths: options.paths,
-        targetPath: options.output,
-        options: {
-            isJavascript: options.javascript,
-            appFilePath: options.appFilePath,
-        },
-    })
-    generateIndexFile({
-        targetPath: options.output,
-        isJavascript: options.javascript,
-    })
 }

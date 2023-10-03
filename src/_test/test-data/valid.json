@@ -1,0 +1,19 @@
+{
+    "a": 1,
+    "b": "hello",
+    "people": [
+        {
+            "name": "John",
+            "age": 20
+        },
+        {
+            "name": "Jane",
+            "age": 30
+        }
+    ],
+    "other": {
+        "nested": {
+            "array": [1, 2, 3]
+        }
+    }
+}

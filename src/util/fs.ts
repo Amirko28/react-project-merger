@@ -9,6 +9,8 @@ export const removeDirectory = (path: string) => {
     rmSync(path, { recursive: true, force: true })
 }
 
+export const isDirectoryExists = (path: string) => existsSync(path)
+
 interface CopyOptions {
     recursive: boolean
     move: boolean
@@ -202,5 +204,5 @@ export const getGitIgnoredFileNames = (path: string) => {
         : []
 }
 
-export const getJsonContentFromFile = (path: string) =>
+export const getJsonContentFromFile = (path: string): Record<string, unknown> =>
     readJSONSync(path, 'utf-8') as Record<string, unknown>

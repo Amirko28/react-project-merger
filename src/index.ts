@@ -1,18 +1,17 @@
 #!/usr/bin/env node
 import { Command } from 'commander'
 import {
-    getInputFileContent,
-    mergeProjects,
-    printFinishedMessage,
+    getFinishedMessage,
+    copySourceProjects,
+    generateMergedProjectSrcCode,
 } from './logic'
+import { Options, RawOptions, vaildateOptions } from './options'
+import { getUserPkgManager } from './util/getUserPkgManager'
 import packageJson from '../package.json'
-import { OptionsSchema, RawOptions, optionsSchema } from './options'
 
-const vaildateOptions = (rawOptions: RawOptions): OptionsSchema => {
-    const optionsFromInputFile = rawOptions.input
-        ? getInputFileContent(rawOptions.input)
-        : {}
-    return optionsSchema.parse({ ...optionsFromInputFile, ...rawOptions })
+const mergeProjects = async (options: Options) => {
+    await copySourceProjects(options)
+    generateMergedProjectSrcCode(options)
 }
 
 const program = new Command()
@@ -41,7 +40,7 @@ program
                 console.log(options)
             }
             await mergeProjects(options)
-            printFinishedMessage(options.output)
+            console.log(getFinishedMessage(options.output, getUserPkgManager()))
         } catch (error) {
             console.error(error)
         }

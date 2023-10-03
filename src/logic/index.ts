@@ -1,3 +1,4 @@
 export * from './getInputFileContent'
-export * from './mergeProjects'
-export * from './printFinishedMessage'
+export * from './copySourceProjects'
+export * from './generateMergedProjectSrcCode'
+export * from './getFinishedMessage'
