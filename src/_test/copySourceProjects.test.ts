@@ -66,17 +66,11 @@ describe('copySourceProjects', () => {
         rmSync('./tmp', { recursive: true, force: true })
     })
 
-    it('should generate a merged directory', async () => {
+    it('should generate a merged directory and merged/package.json from src1', async () => {
         const options = baseOptions
         await copySourceProjects(options)
 
         expect(existsSync(mergedPath)).toBe(true)
-    })
-
-    it('should have merged/package.json from src1', async () => {
-        const options = baseOptions
-        await copySourceProjects(options)
-
         expect(existsSync(path.join(mergedPath, 'package.json'))).toBe(true)
     })
 
