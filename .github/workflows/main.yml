@@ -17,4 +17,4 @@ jobs:
                   node-version: 18.x
 
             - run: pnpm install --frozen-lockfile
-            - run: pnpm run lint && pnpm run build && pnpm run test
+            - run: pnpm lint && pnpm test && pnpm build
