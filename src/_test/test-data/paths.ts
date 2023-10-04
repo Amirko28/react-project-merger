@@ -1,0 +1,5 @@
+export const src1Path = './tmp/src1'
+export const src1PathSrc = './tmp/src1/src'
+export const src2Path = './tmp/src2'
+export const src2PathSrc = './tmp/src2/src'
+export const mergedPath = './tmp/merged'

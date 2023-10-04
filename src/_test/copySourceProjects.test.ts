@@ -1,23 +1,15 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'fs'
 import path from 'path'
-import { copySourceProjects } from '../logic/copySourceProjects'
+import { copySourceProjects } from '../logic'
 import { Options } from '../options'
-
-const src1Path = './tmp/src1'
-const src1PathSrc = './tmp/src1/src'
-const src2Path = './tmp/src2'
-const src2PathSrc = './tmp/src2/src'
-const mergedPath = './tmp/merged'
-
-const baseOptions: Options = {
-    paths: [src1Path, src2Path],
-    output: mergedPath,
-    debug: false,
-    force: false,
-    appFilePath: 'src/App',
-    javascript: false,
-}
+import {
+    mergedPath,
+    src1Path,
+    src1PathSrc,
+    src2Path,
+    src2PathSrc,
+} from './test-data/paths'
 
 const packageJsonContent = `{
     "name": "src1",
@@ -49,7 +41,22 @@ const packageJsonContent = `{
 }
 `
 
+const baseOptions: Options = {
+    paths: [src1Path, src2Path],
+    output: mergedPath,
+    debug: false,
+    force: false,
+    appFilePath: 'src/App',
+    javascript: false,
+}
+
 describe('copySourceProjects', () => {
+    beforeAll(() => {
+        if (existsSync('./tmp')) {
+            rmSync('./tmp', { recursive: true, force: true })
+        }
+    })
+
     beforeEach(() => {
         mkdirSync(src1PathSrc, {
             recursive: true,
@@ -61,7 +68,6 @@ describe('copySourceProjects', () => {
         })
         writeFileSync(path.join(src2PathSrc, '/index.ts'), 'const b = 2')
     })
-
     afterEach(() => {
         rmSync('./tmp', { recursive: true, force: true })
     })

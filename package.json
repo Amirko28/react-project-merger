@@ -11,7 +11,7 @@
     "scripts": {
         "dev": "tsc -w",
         "lint": "eslint . --ext ts,tsx",
-        "test": "vitest",
+        "test": "vitest run --dir ./src/_test --passWithNoTests --single-thread",
         "build": "tsup src/index.ts --format cjs,esm --dts --minify",
         "link-cli": "pnpm build && pnpm unlink . && pnpm link ."
     },

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import path from 'path'
-import { getInputFileContent } from '../logic/getInputFileContent'
+import { getInputFileContent } from '../logic'
 
 describe('getInputFileContent', () => {
     it('get a valid json', () => {

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { getFinishedMessage } from '../logic/getFinishedMessage'
+import { getFinishedMessage } from '../logic'
 import { PackageManager, getUserPkgManager } from '../util/getUserPkgManager'
 
 describe('getFinishedMessage', () => {

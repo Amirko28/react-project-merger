@@ -24,10 +24,7 @@ program
     .option('-o, --output <output>', `output path`)
     .option('-i, --input <input>', 'input file name')
     .option('-f, --force', 'force directory overwrite (default: false)')
-    .option(
-        '-js, --javascript',
-        'generate a javascript project (default: false)'
-    )
+    .option('--javascript', 'generate a javascript project (default: false)')
     .option(
         '--app-file <appFilePath>',
         `app component path (default: 'src/App')`
