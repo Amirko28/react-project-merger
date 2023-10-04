@@ -1,5 +1,11 @@
 # react-project-merger
 
+## 1.0.2
+
+### Patch Changes
+
+-   fix cicd
+
 ## 1.0.1
 
 ### Patch Changes
