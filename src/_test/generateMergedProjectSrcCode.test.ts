@@ -110,7 +110,7 @@ describe('generateMergedProjectSrcCode', () => {
         rmSync('./tmp', { recursive: true, force: true })
     })
 
-    it('should delete source directories root files', () => {
+    it('should generate router, app and index files', () => {
         const options = baseOptions
         generateMergedProjectSrcCode(options)
 
@@ -118,82 +118,46 @@ describe('generateMergedProjectSrcCode', () => {
             path.join(mergedPath, src1Path)
         ).concat(getNonDirectoriesFiles(path.join(mergedPath, src2Path)))
 
-        expect(nonDirectoriesFiles.some((file) => existsSync(file))).toBe(false)
-    })
-
-    it('should create src directory in merged directory', () => {
-        const options = baseOptions
-        generateMergedProjectSrcCode(options)
-
-        expect(existsSync(path.join(mergedPath, '/src'))).toBe(true)
-    })
-
-    it('should add react-router-dom to package.json', () => {
-        const options = baseOptions
-        generateMergedProjectSrcCode(options)
+        expect(
+            nonDirectoriesFiles.some((file) => existsSync(file)),
+            'source directories root files were not deleted'
+        ).toBe(false)
 
         const packageJsonContent = getJsonContentFromFile(
             path.join(mergedPath, '/package.json')
         )
 
         expect(
-            Object.keys(
-                packageJsonContent.dependencies as Record<string, string>
-            ).includes('react-router-dom')
+            existsSync(path.join(mergedPath, '/src')),
+            'merged/src directory was not created'
         ).toBe(true)
-    })
-
-    it('should add react-router-dom to package.json', () => {
-        const options = baseOptions
-        generateMergedProjectSrcCode(options)
-
-        const packageJsonContent = getJsonContentFromFile(
-            path.join(mergedPath, '/package.json')
-        )
-
         expect(
             Object.keys(
                 packageJsonContent.dependencies as Record<string, string>
-            ).includes('react-router-dom')
+            ).includes('react-router-dom'),
+            'react-router-dom not found in package.json'
         ).toBe(true)
-    })
-
-    it('should generate an App component', () => {
-        const options = baseOptions
-        generateMergedProjectSrcCode(options)
-
         expect(
-            existsSync(path.join(mergedPath, `${baseOptions.appFilePath}.tsx`))
+            existsSync(path.join(mergedPath, `${baseOptions.appFilePath}.tsx`)),
+            'App.tsx not found'
+        ).toBe(true)
+        expect(
+            existsSync(path.join(mergedPath, '/src/index.tsx')),
+            'index.tsx not found'
+        ).toBe(true)
+        expect(
+            existsSync(path.join(mergedPath, '/index.html')),
+            'index.html not found'
         ).toBe(true)
     })
 
-    it('should generate an js App component if --javascript is passed', () => {
+    it('should generate App.jsx and index.jsx if --javascript is passed', () => {
         const options: Options = { ...baseOptions, javascript: true }
         generateMergedProjectSrcCode(options)
 
         expect(
             existsSync(path.join(mergedPath, `${baseOptions.appFilePath}.jsx`))
         ).toBe(true)
-    })
-
-    it('should an index.tsx file', () => {
-        const options = baseOptions
-        generateMergedProjectSrcCode(options)
-
-        expect(existsSync(path.join(mergedPath, '/src/index.tsx'))).toBe(true)
-    })
-
-    it('should an index.jsx file if --javascript is passed', () => {
-        const options: Options = { ...baseOptions, javascript: true }
-        generateMergedProjectSrcCode(options)
-
         expect(existsSync(path.join(mergedPath, '/src/index.jsx'))).toBe(true)
-    })
-
-    it('should an index.html file', () => {
-        const options = baseOptions
-        generateMergedProjectSrcCode(options)
-
-        expect(existsSync(path.join(mergedPath, '/index.html'))).toBe(true)
     })
 })
