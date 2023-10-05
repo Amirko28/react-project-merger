@@ -1,5 +1,11 @@
 # react-project-merger
 
+## 1.2.3
+
+### Patch Changes
+
+-   fix default value in README for --app-file flag
+
 ## 1.2.2
 
 ### Patch Changes
