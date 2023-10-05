@@ -1,5 +1,17 @@
 # react-project-merger
 
+## 1.1.0
+
+### Minor Changes
+
+-   chore(README): add readme file
+
+## 1.0.3
+
+### Patch Changes
+
+-   chore(package.json): update package.json fields
+
 ## 1.0.2
 
 ### Patch Changes

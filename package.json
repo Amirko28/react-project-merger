@@ -1,13 +1,11 @@
 {
     "name": "@amirko28/react-project-merger",
-    "version": "1.0.2",
-    "description": "",
+    "version": "1.1.0",
+    "description": "A simple CLI tool to merge multiple react projects into one",
     "main": "dist/index.js",
     "module": "dist/index.mjs",
     "types": "dist/index.d.ts",
-    "bin": {
-        "merge": "./dist/index.js"
-    },
+    "bin": "./dist/index.js",
     "scripts": {
         "dev": "tsc -w",
         "lint": "eslint . --ext ts,tsx",
@@ -16,9 +14,19 @@
         "link-cli": "pnpm build && pnpm unlink . && pnpm link .",
         "release": "changeset publish"
     },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
+    "keywords": [
+        "merge",
+        "react",
+        "typescript",
+        "project",
+        "react-router"
+    ],
+    "author": "Amir Ketter",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/amirko28/react-project-merger.git"
+    },
     "devDependencies": {
         "@changesets/cli": "^2.26.2",
         "@types/fs-extra": "^11.0.2",

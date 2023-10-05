@@ -18,7 +18,7 @@ const program = new Command()
 
 program
     .description('Merge projects')
-    .usage('merge <paths...> <output> [options]')
+    .usage('react-project-merger <paths...> <output> [options]')
     .version(packageJson.version)
     .option('-p, --paths <paths...>', `projects' paths`)
     .option('-o, --output <output>', `output path`)
