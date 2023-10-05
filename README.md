@@ -29,16 +29,16 @@ pnpm react-project-merger -p app1 app2 -o merged
 
 You can pass additional flags:
 
-| Flag                     | Mandatory | Description                                            |
-| ------------------------ | --------- | ------------------------------------------------------ |
-| -p --paths <paths...>    | ✅        | The given projects' paths                              |
-| -o --output <output>     | ✅        | The merged project path                                |
-| -i --input <inputPath>   | ❌        | Input file (for passing args)                          |
-| -f --force               | ❌        | Force merged directory overwrite                       |
-| --javascript             | ❌        | Generates a javascript merged project (default: false) |
-| --app-file <appFilePath> | ❌        | The App component path in the given projects           |
-| -V --version             | ❌        | The CLI version                                        |
-| -h --help                | ❌        | Prints help                                            |
+| Flag                       | Mandatory | Description                                                   |
+| -------------------------- | --------- | ------------------------------------------------------------- |
+| -p --paths <paths...>      | ✅        | The given projects' paths                                     |
+| -o --output \<output\>     | ✅        | The merged project path                                       |
+| -i --input \<inputPath\>   | ❌        | Input file (for passing args)                                 |
+| -f --force                 | ❌        | Force merged directory overwrite (default: false)             |
+| --javascript               | ❌        | Generates a javascript merged project (default: false)        |
+| --app-file \<appFilePath\> | ❌        | The App component path in the given projects (default: false) |
+| -V --version               | ❌        | The CLI version                                               |
+| -h --help                  | ❌        | Display help                                                  |
 
 ## Input file example
 

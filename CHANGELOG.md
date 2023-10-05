@@ -1,5 +1,11 @@
 # react-project-merger
 
+## 1.2.2
+
+### Patch Changes
+
+-   fix(README): add escape backslash before special chars in README
+
 ## 1.2.1
 
 ### Patch Changes
