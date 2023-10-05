@@ -1,6 +1,6 @@
 {
     "name": "@amirko28/react-project-merger",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "description": "A simple CLI tool to merge multiple react projects into one",
     "main": "dist/index.js",
     "module": "dist/index.mjs",
@@ -19,7 +19,9 @@
         "react",
         "typescript",
         "project",
-        "react-router"
+        "react-router",
+        "microfrontend",
+        "micro-frontend"
     ],
     "author": "Amir Ketter",
     "license": "MIT",
