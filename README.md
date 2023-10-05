@@ -2,6 +2,10 @@
 
 `react-project-merger` is a simple CLI for merging existing react projects into one using [React Router](https://github.com/remix-run/react-router). Pleate note that the CLI **does not** modify the existing projects!
 
+## Why does this exist?
+
+In microfrontend architecture, sometimes you want to merge existing microfrontends into one to improve the ability to manage your microfrontends.
+
 ## Usage
 
 ### Using NPX
@@ -36,6 +40,19 @@ You can pass additional flags:
 | -V --version             | ❌        | The CLI version                                        |
 | -h --help                | ❌        | Prints help                                            |
 
-## Why does this exist?
+## Input file example
 
-In microfrontend architecture, sometimes you want to merge existing microfrontends into one to improve the ability to manage your microfrontends.
+```json
+{
+    "paths": ["src1", "src2"],
+    "output": "merged",
+    "debug": false,
+    "force": true
+}
+```
+
+And run:
+
+```console
+npx react-project-merger -i input.json
+```

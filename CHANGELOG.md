@@ -1,5 +1,15 @@
 # react-project-merger
 
+## 1.2.0
+
+### Minor Changes
+
+-   chore(README): add input file example
+
+### Patch Changes
+
+-   chore(README): add CLI example of input file
+
 ## 1.1.0
 
 ### Minor Changes
